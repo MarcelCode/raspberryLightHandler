@@ -5,15 +5,15 @@ import (
 	"github.com/stianeikeland/go-rpio"
 )
 
-func main(){
+func main() {
 	SetupLight()
 
 	e := echo.New()
-	e.GET("/light/on", LightOn)
-	e.GET("/light/off", LightOff)
-	e.GET("/light/breath-on", BreathOn)
-	e.GET("/light/breath-off", BreathOff)
-	e.GET("/light/state", State)
+	e.GET("/light/:id/on", LightOn)
+	e.GET("/light/:id/off", LightOff)
+	e.GET("/light/:id/breath-on", BreathOn)
+	e.GET("/light/:id/breath-off", BreathOff)
+	e.GET("/light/:id/state", State)
 
 	e.Logger.Fatal(e.Start(":3000"))
 	defer rpio.Close()

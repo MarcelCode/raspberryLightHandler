@@ -8,15 +8,16 @@ import (
 
 type ModulesStruct struct {
 	module1 Module
+	module2 Module
 }
 
 type Module struct {
-	Pin rpio.Pin
-	State bool
+	Pin           rpio.Pin
+	State         bool
 	StopBreathing chan bool
 }
 
-func (lm *Module) init(){
+func (lm *Module) init() {
 	lm.Pin.Mode(rpio.Pwm)
 	lm.Pin.Freq(1000)
 }
@@ -44,10 +45,9 @@ func (lm *Module) breathOn() {
 		intensity = 0
 	}
 
-
 	for {
 		select {
-		case <- lm.StopBreathing:
+		case <-lm.StopBreathing:
 			fmt.Println("Stop infinite loop")
 			return
 		default:
@@ -57,7 +57,7 @@ func (lm *Module) breathOn() {
 				intensity += 1
 			}
 
-			if intensity == 100 || intensity == 0{
+			if intensity == 100 || intensity == 0 {
 				intensityDown = !intensityDown
 			}
 
@@ -67,7 +67,7 @@ func (lm *Module) breathOn() {
 	}
 }
 
-func (lm *Module) breathOff(){
+func (lm *Module) breathOff() {
 	fmt.Println("Stop breathing")
 	fmt.Println("State", lm.State)
 	lm.StopBreathing <- true
@@ -82,11 +82,11 @@ func (lm *Module) breathOff(){
 	lm.Pin.DutyCycle(intensity, 100)
 }
 
-func (lm *Module) state(){
+func (lm *Module) state() {
 	fmt.Println("State", lm.State)
 }
 
-func InitRaspberryPins(){
+func InitRaspberryPins() {
 	err := rpio.Open()
 	if err != nil {
 		panic(err)
@@ -95,13 +95,17 @@ func InitRaspberryPins(){
 
 var Modules ModulesStruct
 
-func SetupLight()  {
+func SetupLight() {
 	InitRaspberryPins()
 
 	// Add one Module
 	module1 := Module{rpio.Pin(13), false, make(chan bool)}
 	module1.init()
 
+	module2 := Module{rpio.Pin(19), false, make(chan bool)}
+	module2.init()
+
 	// Add Modules to Global Variable
 	Modules.module1 = module1
+	Modules.module2 = module2
 }
